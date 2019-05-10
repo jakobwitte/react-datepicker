@@ -221,10 +221,10 @@ export default class DatePicker extends React.Component {
     this.props.openToDate
       ? newDate(this.props.openToDate)
       : this.props.selectsEnd && this.props.startDate
-        ? newDate(this.props.startDate)
-        : this.props.selectsStart && this.props.endDate
-          ? newDate(this.props.endDate)
-          : now(this.props.utcOffset);
+      ? newDate(this.props.startDate)
+      : this.props.selectsStart && this.props.endDate
+      ? newDate(this.props.endDate)
+      : now(this.props.utcOffset);
 
   calcInitialState = () => {
     const defaultPreSelection = this.getPreSelection();
@@ -234,8 +234,8 @@ export default class DatePicker extends React.Component {
       minDate && isBefore(defaultPreSelection, minDate)
         ? minDate
         : maxDate && isAfter(defaultPreSelection, maxDate)
-          ? maxDate
-          : defaultPreSelection;
+        ? maxDate
+        : defaultPreSelection;
     return {
       open: this.props.startOpen || false,
       preventFocus: false,
@@ -297,7 +297,8 @@ export default class DatePicker extends React.Component {
   };
 
   handleBlur = event => {
-    if (this.state.open && !this.props.withPortal) {
+    if (this.state.open && !this.props.withPortal && this.justPressedCalendar) {
+      // re-focus the input when we click inside the calendar (e.g. on year dropdown)
       this.deferFocusInput();
     } else {
       this.props.onBlur(event);
@@ -313,6 +314,15 @@ export default class DatePicker extends React.Component {
     if (this.props.withPortal) {
       event.preventDefault();
     }
+  };
+
+  handleCalendarPressStart = event => {
+    this.justPressedCalendar = true;
+    clearTimeout(this.calendarPressTimeout);
+    this.calendarPressTimeout = setTimeout(
+      () => (this.justPressedCalendar = false),
+      1
+    );
   };
 
   handleChange = (...allArgs) => {
@@ -588,6 +598,7 @@ export default class DatePicker extends React.Component {
         yearDropdownItemNumber={this.props.yearDropdownItemNumber}
         previousMonthButtonLabel={this.props.previousMonthButtonLabel}
         nextMonthButtonLabel={this.props.nextMonthButtonLabel}
+        onPressStart={this.handleCalendarPressStart}
       >
         {this.props.children}
       </WrappedCalendar>
@@ -605,8 +616,8 @@ export default class DatePicker extends React.Component {
       typeof this.props.value === "string"
         ? this.props.value
         : typeof this.state.inputValue === "string"
-          ? this.state.inputValue
-          : safeDateFormat(this.props.selected, this.props);
+        ? this.state.inputValue
+        : safeDateFormat(this.props.selected, this.props);
 
     return React.cloneElement(customInput, {
       [customInputRef]: input => {

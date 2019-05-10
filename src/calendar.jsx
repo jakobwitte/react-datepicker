@@ -111,7 +111,8 @@ export default class Calendar extends React.Component {
     useShortMonthInDropdown: PropTypes.bool,
     showDisabledMonthNavigation: PropTypes.bool,
     previousMonthButtonLabel: PropTypes.string,
-    nextMonthButtonLabel: PropTypes.string
+    nextMonthButtonLabel: PropTypes.string,
+    onPressStart: PropTypes.func
   };
 
   static get defaultProps() {
@@ -584,6 +585,7 @@ export default class Calendar extends React.Component {
         className={classnames("react-datepicker", this.props.className, {
           "react-datepicker--time-only": this.props.showTimeSelectOnly
         })}
+        onPressStart={this.props.onPressStart}
       >
         {this.renderPreviousMonthButton()}
         {this.renderNextMonthButton()}
