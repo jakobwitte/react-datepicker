@@ -101,6 +101,7 @@ export default class DatePicker extends React.Component {
     minDate: PropTypes.object,
     monthsShown: PropTypes.number,
     name: PropTypes.string,
+    onClick: PropTypes.func,
     onBlur: PropTypes.func,
     onChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func,
@@ -168,6 +169,7 @@ export default class DatePicker extends React.Component {
       disabled: false,
       disabledKeyboardNavigation: false,
       dropdownMode: "scroll",
+      onClick() {},
       onFocus() {},
       onBlur() {},
       onKeyDown() {},
@@ -436,7 +438,8 @@ export default class DatePicker extends React.Component {
     this.setState({ inputValue: null });
   };
 
-  onInputClick = () => {
+  onInputClick = event => {
+    this.props.onClick(event);
     if (!this.props.disabled && !this.props.readOnly) {
       this.setOpen(true);
     }
