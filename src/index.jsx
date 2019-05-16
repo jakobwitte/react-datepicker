@@ -297,11 +297,9 @@ export default class DatePicker extends React.Component {
   };
 
   handleBlur = event => {
-    if (this.state.open && !this.props.withPortal) {
+    if (this.state.open && !this.props.withPortal && this.justPressedCalendar) {
       // re-focus the input when we click inside the calendar (e.g. on year dropdown)
-      if (this.justPressedCalendar) {
-        this.deferFocusInput();
-      }
+      this.deferFocusInput();
     } else {
       this.props.onBlur(event);
     }
