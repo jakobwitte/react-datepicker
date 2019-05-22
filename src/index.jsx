@@ -221,10 +221,10 @@ export default class DatePicker extends React.Component {
     this.props.openToDate
       ? newDate(this.props.openToDate)
       : this.props.selectsEnd && this.props.startDate
-      ? newDate(this.props.startDate)
-      : this.props.selectsStart && this.props.endDate
-      ? newDate(this.props.endDate)
-      : now(this.props.utcOffset);
+        ? newDate(this.props.startDate)
+        : this.props.selectsStart && this.props.endDate
+          ? newDate(this.props.endDate)
+          : now(this.props.utcOffset);
 
   calcInitialState = () => {
     const defaultPreSelection = this.getPreSelection();
@@ -234,10 +234,12 @@ export default class DatePicker extends React.Component {
       minDate && isBefore(defaultPreSelection, minDate)
         ? minDate
         : maxDate && isAfter(defaultPreSelection, maxDate)
-        ? maxDate
-        : defaultPreSelection;
+          ? maxDate
+          : defaultPreSelection;
+    const isOpen = this.props.startOpen || false;
     return {
-      open: this.props.startOpen || false,
+      open: isOpen,
+      ignoreClickoutside: isOpen,
       preventFocus: false,
       preSelection: this.props.selected
         ? newDate(this.props.selected)
@@ -270,6 +272,16 @@ export default class DatePicker extends React.Component {
           : this.calcInitialState().preSelection,
       lastPreSelectChange: PRESELECT_CHANGE_VIA_NAVIGATE
     });
+
+    clearTimeout(this.ignoreClickoutsideTimeout);
+    if (open) {
+      this.ignoreClickoutsideTimeout = setTimeout(
+        () => this.setState({ ignoreClickoutside: open }),
+        200
+      );
+    } else {
+      this.setState({ ignoreClickoutside: open });
+    }
   };
 
   handleFocus = event => {
@@ -307,6 +319,9 @@ export default class DatePicker extends React.Component {
   };
 
   handleCalendarClickOutside = event => {
+    if (event.target === this.input) {
+      return;
+    }
     if (!this.props.inline) {
       this.setOpen(false);
     }
@@ -607,7 +622,7 @@ export default class DatePicker extends React.Component {
 
   renderDateInput = () => {
     var className = classnames(this.props.className, {
-      [outsideClickIgnoreClass]: this.state.open
+      [outsideClickIgnoreClass]: this.state.ignoreClickoutside
     });
 
     const customInput = this.props.customInput || <input type="text" />;
@@ -616,8 +631,8 @@ export default class DatePicker extends React.Component {
       typeof this.props.value === "string"
         ? this.props.value
         : typeof this.state.inputValue === "string"
-        ? this.state.inputValue
-        : safeDateFormat(this.props.selected, this.props);
+          ? this.state.inputValue
+          : safeDateFormat(this.props.selected, this.props);
 
     return React.cloneElement(customInput, {
       [customInputRef]: input => {
