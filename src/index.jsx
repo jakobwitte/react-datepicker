@@ -223,10 +223,10 @@ export default class DatePicker extends React.Component {
     this.props.openToDate
       ? newDate(this.props.openToDate)
       : this.props.selectsEnd && this.props.startDate
-      ? newDate(this.props.startDate)
-      : this.props.selectsStart && this.props.endDate
-      ? newDate(this.props.endDate)
-      : now(this.props.utcOffset);
+        ? newDate(this.props.startDate)
+        : this.props.selectsStart && this.props.endDate
+          ? newDate(this.props.endDate)
+          : now(this.props.utcOffset);
 
   calcInitialState = () => {
     const defaultPreSelection = this.getPreSelection();
@@ -236,8 +236,8 @@ export default class DatePicker extends React.Component {
       minDate && isBefore(defaultPreSelection, minDate)
         ? minDate
         : maxDate && isAfter(defaultPreSelection, maxDate)
-        ? maxDate
-        : defaultPreSelection;
+          ? maxDate
+          : defaultPreSelection;
     return {
       open: this.props.startOpen || false,
       preventFocus: false,
@@ -309,6 +309,10 @@ export default class DatePicker extends React.Component {
   };
 
   handleCalendarClickOutside = event => {
+    if (event.target && event.target == this.input) {
+      return;
+    }
+
     if (!this.props.inline) {
       this.setOpen(false);
     }
@@ -609,9 +613,7 @@ export default class DatePicker extends React.Component {
   };
 
   renderDateInput = () => {
-    var className = classnames(this.props.className, {
-      [outsideClickIgnoreClass]: this.state.open
-    });
+    var className = classnames(this.props.className);
 
     const customInput = this.props.customInput || <input type="text" />;
     const customInputRef = this.props.customInputRef || "ref";
@@ -619,8 +621,8 @@ export default class DatePicker extends React.Component {
       typeof this.props.value === "string"
         ? this.props.value
         : typeof this.state.inputValue === "string"
-        ? this.state.inputValue
-        : safeDateFormat(this.props.selected, this.props);
+          ? this.state.inputValue
+          : safeDateFormat(this.props.selected, this.props);
 
     return React.cloneElement(customInput, {
       [customInputRef]: input => {
